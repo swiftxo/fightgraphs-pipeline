@@ -10,11 +10,13 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 # Define the declarative base
 Base = declarative_base()
 
-def get_postgres_base() -> Base:
+
+def get_postgres_base() -> DeclarativeMeta:
     """
     Returns the declarative base for PostgreSQL models.
     This function is used to ensure that the Base is correctly initialized
@@ -22,8 +24,10 @@ def get_postgres_base() -> Base:
     """
     return Base
 
+
 class PromotionEntity(Base):
     """SQLAlchemy model for the promotion table."""
+
     __tablename__ = "promotion"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -36,6 +40,7 @@ class PromotionEntity(Base):
 
 class EventEntity(Base):
     """SQLAlchemy model for the event table."""
+
     __tablename__ = "event"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -52,6 +57,7 @@ class EventEntity(Base):
 
 class WeightclassEntity(Base):
     """SQLAlchemy model for the weightclass table."""
+
     __tablename__ = "weightclass"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -69,6 +75,7 @@ class WeightclassEntity(Base):
 
 class TitleEntity(Base):
     """SQLAlchemy model for the title table."""
+
     __tablename__ = "title"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -84,34 +91,48 @@ class TitleEntity(Base):
 
 class FighterEntity(Base):
     """SQLAlchemy model for the fighter table."""
+
     __tablename__ = "fighter"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    first_name = Column(String(100), nullable=False)
-    last_name = Column(String(100), nullable=False)
+    first_name = Column(String(100))
+    last_name = Column(String(100))
     nickname = Column(String(100))
     date_of_birth = Column(Date)
     height_cm = Column(Numeric(5, 2))
     weight_kg = Column(Numeric(5, 2))
     reach_cm = Column(Numeric(5, 2))
-    stance = Column(String(50), nullable=False)
+    stance = Column(String(50))
     image_url = Column(String(255))
-    ufcstats_url = Column(String(255), nullable=False)
+    ufcstats_url = Column(String(255))
 
     # Relationships for fights
-    fights1 = relationship("FightEntity", foreign_keys="[FightEntity.fighter1_id]", back_populates="fighter1")
-    fights2 = relationship("FightEntity", foreign_keys="[FightEntity.fighter2_id]", back_populates="fighter2")
-    wins = relationship("FightEntity", foreign_keys="[FightEntity.winner_id]", back_populates="winner")
+    fights1 = relationship(
+        "FightEntity",
+        foreign_keys="[FightEntity.fighter1_id]",
+        back_populates="fighter1",
+    )
+    fights2 = relationship(
+        "FightEntity",
+        foreign_keys="[FightEntity.fighter2_id]",
+        back_populates="fighter2",
+    )
+    wins = relationship(
+        "FightEntity", foreign_keys="[FightEntity.winner_id]", back_populates="winner"
+    )
 
     # Other relationships
     fight_stats = relationship("FightStatEntity", back_populates="fighter")
     fight_bonuses = relationship("FightBonusEntity", back_populates="fighter")
     scorecards = relationship("ScorecardEntity", back_populates="fighter")
-    fighter_record = relationship("FighterRecordEntity", back_populates="fighter", uselist=False)
+    fighter_record = relationship(
+        "FighterRecordEntity", back_populates="fighter", uselist=False
+    )
 
 
 class TimeFormatEntity(Base):
     """SQLAlchemy model for the timeformat table."""
+
     __tablename__ = "timeformat"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -129,6 +150,7 @@ class TimeFormatEntity(Base):
 
 class RefereeEntity(Base):
     """SQLAlchemy model for the referee table."""
+
     __tablename__ = "referee"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -140,6 +162,7 @@ class RefereeEntity(Base):
 
 class FightEntity(Base):
     """SQLAlchemy model for the fight table."""
+
     __tablename__ = "fight"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -155,6 +178,7 @@ class FightEntity(Base):
     weight_class_id = Column(Integer, ForeignKey("weightclass.id"), nullable=False)
     referee_id = Column(Integer, ForeignKey("referee.id"))
     ufcstats_url = Column(String(255), nullable=False)
+    card_position = Column(Integer, nullable=True)
 
     # Relationships
     event = relationship("EventEntity", back_populates="fights")
@@ -162,9 +186,15 @@ class FightEntity(Base):
     referee = relationship("RefereeEntity", back_populates="fights")
     weight_class = relationship("WeightclassEntity", back_populates="fights")
 
-    fighter1 = relationship("FighterEntity", foreign_keys=[fighter1_id], back_populates="fights1")
-    fighter2 = relationship("FighterEntity", foreign_keys=[fighter2_id], back_populates="fights2")
-    winner = relationship("FighterEntity", foreign_keys=[winner_id], back_populates="wins")
+    fighter1 = relationship(
+        "FighterEntity", foreign_keys=[fighter1_id], back_populates="fights1"
+    )
+    fighter2 = relationship(
+        "FighterEntity", foreign_keys=[fighter2_id], back_populates="fights2"
+    )
+    winner = relationship(
+        "FighterEntity", foreign_keys=[winner_id], back_populates="wins"
+    )
 
     title_fights = relationship("TitleFightEntity", back_populates="fight")
     fight_stats = relationship("FightStatEntity", back_populates="fight")
@@ -174,6 +204,7 @@ class FightEntity(Base):
 
 class TitleFightEntity(Base):
     """SQLAlchemy model for the titlefight table."""
+
     __tablename__ = "titlefight"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -187,6 +218,7 @@ class TitleFightEntity(Base):
 
 class FightStatEntity(Base):
     """SQLAlchemy model for the fightstat table."""
+
     __tablename__ = "fightstat"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -223,6 +255,7 @@ class FightStatEntity(Base):
 
 class BonusEntity(Base):
     """SQLAlchemy model for the bonus table."""
+
     __tablename__ = "bonus"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -234,6 +267,7 @@ class BonusEntity(Base):
 
 class FightBonusEntity(Base):
     """SQLAlchemy model for the fightbonus table."""
+
     __tablename__ = "fightbonus"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -250,6 +284,7 @@ class FightBonusEntity(Base):
 
 class JudgeEntity(Base):
     """SQLAlchemy model for the judge table."""
+
     __tablename__ = "judge"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -261,6 +296,7 @@ class JudgeEntity(Base):
 
 class ScorecardEntity(Base):
     """SQLAlchemy model for the scorecard table."""
+
     __tablename__ = "scorecard"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -277,6 +313,7 @@ class ScorecardEntity(Base):
 
 class FighterRecordEntity(Base):
     """SQLAlchemy model for the fighterrecord table."""
+
     __tablename__ = "fighterrecord"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -288,4 +325,3 @@ class FighterRecordEntity(Base):
 
     # Relationship
     fighter = relationship("FighterEntity", back_populates="fighter_record")
-
