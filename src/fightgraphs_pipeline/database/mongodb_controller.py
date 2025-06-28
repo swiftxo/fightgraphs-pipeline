@@ -1,8 +1,6 @@
-
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
-
 
 
 class MongoDBController:
@@ -65,7 +63,6 @@ class MongoDBController:
             for index in item["indexes"]:
                 collection.create_index(index)
             print(f"Indexes created for collection '{item['collection_name']}'.")
-
 
     def close_connection(self) -> None:
         """
